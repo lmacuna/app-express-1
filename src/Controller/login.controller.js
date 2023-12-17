@@ -4,49 +4,68 @@ require('dotenv').config()
 
 
 const login = (req, res) => {
-    
+
     try {
 
-        var values= req.body
-       //values=JSON.parse(values)
+        var values = req.body
+        //values=JSON.parse(values)
         console.log(values)
-          let user=values.user
-          let password=values.password
-     cnx.query(process.env.SELECT_USER + `'${user}' and password='${password}'`,(error, result) => {
+        let user = values.user
+        let password = values.password
+        
+
          
-            if (error) {
-                console.log(error)
-            } else {
-                if (result[0] !== undefined) {
-                    var users = result
-                    const user = { users: users }
-                    const accessToken = generateAccessToken(user)
-                  
-                    return res.header('authorization', accessToken).json({
-                        message: 'Usuario autenticado',
-                        token: accessToken
-                    })
-                } else if (result[0] === undefined) {
-                  
-                    return res.json({ "data": "Login Incorrecto" })
-                }
-            }
-           
-        }) 
+                cnx.query(process.env.SELECT_USER + `'${user}' and password='${password}'`, async(error, result) => {
+
+                    if (error) {
+                        console.log(error)
+                    } else {
+
+                        if (result[0] !== undefined) {
+                            var users = result
+                            const user = { users: users }
+                            const accessToken = generateAccessToken(user)
+                            
+                            return await res.header('authorization', accessToken).json({
+                                message: 'Usuario autenticado',
+                                token: accessToken
+                            })
+                        } else if (result[0] === undefined) {
+                           
+                            return await res.json({ "data": "Login Incorrecto" })
+                        }
 
 
 
+
+
+
+                    }
+
+                   
+
+                })
+
+                
+            
+
+
+
+
+        
+      
     } catch (error) {
         return res.sendStatus(500).json({ message: error.message })
     }
+
 }
 
 
 
-async function generateAccessToken(user) {
+function generateAccessToken(user) {
 
 
-    return  await jwt.sign(user, process.env.SECRET, { expiresIn: '24h' })
+    return jwt.sign(user, process.env.SECRET, { expiresIn: '24h' })
 
 }
 
@@ -64,4 +83,4 @@ function validateToken(req, res, next) {
 }
 
 
-module.exports = { login,validateToken }
+module.exports = { login, validateToken }

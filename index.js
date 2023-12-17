@@ -8,5 +8,10 @@ app.use(require('./src/Router/Routes.js'))
 
 app.listen(app.get('port'),(error)=>{
 
-    error?console.log(error):console.log(`Server run on port ${app.get('port')}`)
+    
+    if(error){
+        console.log(error)
+    }else{
+        console.log(`Server run on port ${app.get('port')}`)
+    }
 })
